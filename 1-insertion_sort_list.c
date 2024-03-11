@@ -1,53 +1,48 @@
 #include "sort.h"
 
 /**
- * insertion_sort_list - Sorts a doubly linked list
- * of integers in ascending order
+ * swap_nodes - Swap two nodes in a listint_t doubly-linked list.
+ * @h: A pointer to the head of the doubly-linked list.
+ * @n1: A pointer to the first node to swap.
+ * @n2: The second node to swap.
+ */
+void swap_nodes(listint_t **h, listint_t **n1, listint_t *n2)
+{
+	(*n1)->next = n2->next;
+	if (n2->next != NULL)
+		n2->next->prev = *n1;
+	n2->prev = (*n1)->prev;
+	n2->next = *n1;
+	if ((*n1)->prev != NULL)
+		(*n1)->prev->next = n2;
+	else
+		*h = n2;
+	(*n1)->prev = n2;
+	*n1 = n2->prev;
+}
+
+/**
+ * insertion_sort_list - Sorts a doubly linked list of integers
+ *                       using the insertion sort algorithm.
+ * @list: A pointer to the head of a doubly-linked list of integers.
  *
- * @list: Double pointer to a list of type listint_t
- *
- * Returns: void
+ * Description: Prints the list after each swap.
  */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *prev_ptr = NULL, *hunter = NULL,
-		  *anchor = NULL, *assistant = NULL;
+	listint_t *iter, *insert, *tmp;
 
-	if (list == NULL || *list == NULL)
+	if (list == NULL || *list == NULL || (*list)->next == NULL)
 		return;
-	anchor = prev_ptr = *list;
-	hunter = prev_ptr->next;
-	while (hunter != NULL)
+
+	for (iter = (*list)->next; iter != NULL; iter = tmp)
 	{
-		assistant = hunter;
-		prev_ptr = hunter->prev;
-		if (hunter->n < prev_ptr->n)
+		tmp = iter->next;
+		insert = iter->prev;
+		while (insert != NULL && iter->n < insert->n)
 		{
-			hunter = hunter->next;
-			while (assistant->n < assistant->prev->n)
-			{
-				anchor = assistant;
-				prev_ptr->next = anchor->next;
-				anchor->next->prev = prev_ptr;
-				anchor->prev = prev_ptr->prev;
-				if (prev_ptr->n == (*list)->n)
-					prev_ptr->prev = *list;
-				else
-				{
-					prev_ptr->prev->next = anchor;
-					prev_ptr->prev = anchor;
-				}
-				anchor->next = prev_ptr;
-				print_list(*list);
-				prev_ptr = anchor->prev;
-				assistant = prev_ptr->next;
-			}
-		}
-		else
-		{
-			hunter = hunter->next;
-			prev_ptr = prev_ptr->next;
+			swap_nodes(list, &insert, iter);
+			print_list((const listint_t *)*list);
 		}
 	}
 }
-
